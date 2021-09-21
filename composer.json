@@ -1,0 +1,21 @@
+{
+    "name": "jleiva/ejercicio",
+    "description": "Iterates through a list of folders to determine if dependencies have been updated",
+    "type": "project",
+    "authors": [
+        {
+            "name": "jandresleiva",
+            "email": "andresleiva.4@gmail.com"
+        }
+    ],
+    "require": {
+        "doctrine/migrations": "^3.2",
+        "doctrine/orm": "^2.9",
+        "doctrine/cache": "~1.11.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Entities\\": "src/Entities"
+        }
+    }
+}

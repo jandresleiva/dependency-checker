@@ -1,0 +1,10 @@
+#! /bin/bash
+
+echo "Inicializando entorno..."
+
+# Utilizo 3307 en el host por si está ocupado con otro servidor MySQL.
+# No uso volumenes xq la intención es hacerlo una sola vez, pero no será persistente en el tiempo en este caso.
+
+$mysqlCommand=`docker run --name exercise-mysql -e MYSQL_ROOT_PASSWORD=abcd1234 -e MYSQL_DATABASE=exercise_db -p 127.0.0.1:3307:3306 -d mysql`
+
+eval $mysqlCommand
