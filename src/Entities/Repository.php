@@ -106,4 +106,32 @@ class Repository
     public function getDependants() {
         return $this->dependants->toArray();
     }
+
+    /**
+     * Returns a list of unique dependant repository names gathered recursively.
+     *
+     * @param string[] $prev_result
+     *
+     * @return string[]
+     */
+    public function getRecursiveDependantsList(?array $prev_result = []): array {
+        // If this is the first call, I'll initialize with this name, to avoid circle references.
+        if (empty($prev_result)) {
+            $result = [$this->getName()];
+        } else {
+            // Otherwise, I will make sure this is not already on the list.
+            $result = $prev_result;
+            if (in_array($this->getName(), $prev_result)) {
+                return $result;
+            }
+        }
+
+        $result[] = $this->getName();
+
+        foreach( $this->dependants as $dependant) {
+            $result = array_unique(array_merge($result, array_values($dependant->getRecursiveDependantsList($result))));
+        }
+
+        return $result;
+    }
 }
