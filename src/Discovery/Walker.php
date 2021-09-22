@@ -44,7 +44,6 @@ class Walker
         $scan = glob($this->baseDirectory . "/*");
 
         $this->directories = array_filter($scan, function($el) {
-            var_dump(is_dir($el));
             return is_dir($el);
         });
 
