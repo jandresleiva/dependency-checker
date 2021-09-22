@@ -21,6 +21,10 @@ And to remove the containers once you're done testing run:
 ### Configuration
 Now there's a base db.json within Secrets folder, which works with the default mysql container. If you're using this for your custom mysql container, you'd need to update the connectors there (**NOTE:** Avoid commiting it to github).
 
+You will also need to replace the const in index.php for the destination folder of your repositories.
+
+TODO: In the future this could be part of the base configuration.
+
 ### Testing
 To run tests from root run:
 `vendor/bin/phpunit Tests/`

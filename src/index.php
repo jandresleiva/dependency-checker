@@ -7,6 +7,8 @@ use Discovery\Walker;
 use Entities\Repository;
 use Service\RepositoryManager;
 
+const PROJECTS_PATH = 'repositories';
+
 require_once __DIR__ . "/../bootstrap.php";
 
 $manager = new RepositoryManager($entityManager);
@@ -149,7 +151,7 @@ function createWalker(): Walker {
     // Initializes a walker to discover folders
     $walker = null;
     try {
-        $walker = new Walker(__DIR__ . "/../DirectorioPrueba");
+        $walker = new Walker(PROJECTS_PATH);
     } catch (\Exception $e) {
         echo $e->getMessage();
         exit(1);
