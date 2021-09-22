@@ -64,7 +64,7 @@ class Parser
     private function extractRepositoryName(string $rawRepositoryName): string
     {
         $nameParts = explode("/", $rawRepositoryName);
-        return $nameParts[count($nameParts) - 1];
+        return strtolower($nameParts[count($nameParts) - 1]);
     }
 
     /**
@@ -81,7 +81,7 @@ class Parser
         foreach ($rawDependenciesList as $rawDependency) {
             $urlParts = explode("/", $rawDependency["url"] ?? '');
             $folderName = pathinfo($urlParts[count($urlParts) - 1], PATHINFO_FILENAME);
-            $curatedDependencies[] = $folderName;
+            $curatedDependencies[] = strtolower($folderName);
         }
 
         return $curatedDependencies;
