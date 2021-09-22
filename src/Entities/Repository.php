@@ -103,10 +103,12 @@ class Repository
     /**
      * Get list of dependencies
      *
-     * @return Repository[]
+     * @return string[]
      */
     public function getDependencies(): array {
-        return $this->dependencies->toArray();
+        return array_map(function(Repository $dependency) {
+            return $dependency->getName();
+        }, $this->dependencies->toArray());
     }
 
     /**
