@@ -16,20 +16,23 @@ class Parser
      */
     private array $dependenciesFolderNames;
 
-    /**
-     * @var string
-     */
-    private string $filePath;
+    public function parseFileContent(string $fileContent): void
+    {
+        $this->parseData($fileContent);
+    }
 
-    public function __construct(string $filePath)
+    public function parseFile($filePath): void
     {
         if (!file_exists($filePath)) {
             throw new \Exception("The given file {$filePath} does not exist.");
         }
 
-        $this->filePath = $filePath;
+        $fileContents = file_get_contents($filePath);
+        if ($fileContents === false or empty($fileContents)) {
+            throw new \Exception("The given file {$filePath} cannot be read or is empty.");
+        }
 
-        $this->parseData();
+        $this->parseData($fileContents);
     }
 
     /**
@@ -38,16 +41,11 @@ class Parser
      *
      * @throws \Exception
      */
-    private function parseData(): void
+    private function parseData(string $fileContents): void
     {
-        $fileContents = file_get_contents($this->filePath);
-        if ($fileContents === false or empty($fileContents)) {
-            throw new \Exception("The given file {$this->filePath} cannot be read or is empty.");
-        }
-
         $repositoryData = json_decode($fileContents, true);
         if ($repositoryData === null) {
-            throw new \Exception("The given file {$this->filePath} does not contain a valid JSON format.");
+            throw new \Exception("The given file does not contain a valid JSON format.");
         }
 
         $this->dependenciesFolderNames = $this->extractDependenciesFolderNames($repositoryData['repositories']) ?? [];
