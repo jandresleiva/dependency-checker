@@ -136,6 +136,10 @@ class Repository
         }, $this->dependants->toArray());
     }
 
+    public function getDependantsCount(): int {
+        return $this->dependantsCount;
+    }
+
     /**
      * Returns a list of unique dependant repository names gathered recursively.
      *
