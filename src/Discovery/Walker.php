@@ -34,6 +34,15 @@ class Walker
         return $this->directories;
     }
 
+    public function setBaseDirectory(string $baseDirectory): void
+    {
+        if (!file_exists( $baseDirectory)) {
+            throw new \Exception("The given directory $baseDirectory for the walker does not exist.");
+        }
+
+        $this->baseDirectory = $baseDirectory;
+    }
+
     /**
      * Walks within the baseDirectory and gathers the folder names.
      *
