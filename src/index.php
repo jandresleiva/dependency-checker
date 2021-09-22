@@ -135,9 +135,10 @@ switch ($argv[1]) {
             Will determine which dependant repositories need to get updated after this commit. It takes two arguments commitId and repositoryName.
             By default this will get the saved schema from the storage.
             
-            example: php ./index.php commit commitId repositoryName [--rediscover]
+            example: php ./index.php commit commitId repositoryName [--rediscover|--update]
             
-            --rediscover \t\t will force the discovery of schema from disk instead of loading it from storage. 
+            --rediscover \t\t will force the discovery of schema from disk instead of loading it from storage.
+            --update \t\t will attempt to run composer update on each dependant repository. 
             \n
         HELP;
 
