@@ -37,7 +37,14 @@ class Repository
      */
     private Collection $dependants;
 
-    public function __construct() {
+    /**
+     * @var int
+     */
+    private int $dependantsCount = 0;
+
+    public function __construct(string $name) {
+        $this->name = $name;
+
         $this->dependencies = new ArrayCollection();
         $this->dependants = new ArrayCollection();
     }
@@ -81,6 +88,7 @@ class Repository
      */
     public function addDependant(Repository $repository) {
         $this->dependants[] = $repository;
+        $this->dependantsCount++;
     }
 
     /**
