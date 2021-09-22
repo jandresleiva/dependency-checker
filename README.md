@@ -1,6 +1,9 @@
 
 
 # Instructions
+You will need to make our scripts executable:
+`sudo chmod +x initialize` and `sudo chmod +x cleanup`
+
 To get the environment running start the docker mysql image:
 
 `run ./initialize`
