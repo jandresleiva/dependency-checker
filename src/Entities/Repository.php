@@ -26,6 +26,11 @@ class Repository
      */
     private string $name;
 
+    /** @ORM\Column(type="boolean", options={"default":"0"})
+     * @var bool
+     */
+    private bool $isDirty = false;
+
     /** @ORM\ManyToMany(targetEntity="Repository", inversedBy="repositoryDependencies")
      * @ORM\JoinTable(name="repository_dependency")
      */
@@ -79,6 +84,22 @@ class Repository
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getDirty(): bool
+    {
+        return $this->isDirty;
+    }
+
+    /**
+     * @param bool|null $isDirty
+     */
+    public function setDirty(?bool $isDirty = true): void
+    {
+        $this->isDirty = $isDirty ?? true;
     }
 
     /**
