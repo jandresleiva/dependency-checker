@@ -127,10 +127,13 @@ class Repository
 
     /**
      * Get list of dependant repositories
-     * @return Repository[]
+     * 
+     * @return string[]
      */
-    public function getDependants() {
-        return $this->dependants->toArray();
+    public function getDependants(): array {
+        return array_map(function(Repository $dependant) {
+            return $dependant->getName();
+        }, $this->dependants->toArray());
     }
 
     /**
