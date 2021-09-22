@@ -87,7 +87,7 @@ switch ($argv[1]) {
             exit(1);
         }
 
-        var_dump($foundRepository->getRecursiveDependantsList());
+        var_dump($foundRepository->getRecursiveDependants());
 
         break;
 
@@ -138,7 +138,8 @@ function getRepositoriesList(Walker $walker): array {
 
     foreach ($walker->extractComposerFilesGenerator() as $composerFilePath) {
         try {
-            $parser = new Parser($composerFilePath);
+            $parser = new Parser();
+            $parser->parseFile($composerFilePath);
         } catch (\Exception $e) {
             echo $e->getMessage();
             continue;

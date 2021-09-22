@@ -147,7 +147,7 @@ class Repository
      *
      * @return string[]
      */
-    public function getRecursiveDependantsList(?array $prev_result = []): array {
+    public function getRecursiveDependants(?array $prev_result = []): array {
         // If this is the first call, I'll initialize with this name, to avoid circle references.
         if (empty($prev_result)) {
             $result = [$this->getName()];
@@ -162,7 +162,7 @@ class Repository
         $result[] = $this->getName();
 
         foreach( $this->dependants as $dependant) {
-            $result = array_unique(array_merge($result, array_values($dependant->getRecursiveDependantsList($result))));
+            $result = array_unique(array_merge($result, array_values($dependant->getRecursiveDependants($result))));
         }
 
         return array_unique($result);
