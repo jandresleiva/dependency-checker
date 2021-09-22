@@ -112,6 +112,20 @@ class Repository
     }
 
     /**
+     * Returns a tree of dependencies for this repository.
+     *
+     * @return string[]
+     */
+    public function getRecursiveDependencies(): array {
+        $result = [];
+        foreach($this->dependencies as $dependency) {
+            $result[$dependency->getName()] = $dependency->getRecursiveDependencies();
+        }
+
+        return $result;
+    }
+
+    /**
      * Get list of dependant repositories
      * @return Repository[]
      */
