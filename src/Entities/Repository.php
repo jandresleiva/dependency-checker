@@ -127,7 +127,7 @@ class Repository
 
     /**
      * Get list of dependant repositories
-     * 
+     *
      * @return string[]
      */
     public function getDependants(): array {
@@ -141,9 +141,9 @@ class Repository
     }
 
     /**
-     * Returns a list of unique dependant repository names gathered recursively.
+     * Returns a list of unique dependant repository names gathered recursively. Note that this will include itself.
      *
-     * @param string[] $prev_result
+     * @param null|string[] $prev_result
      *
      * @return string[]
      */
@@ -165,6 +165,6 @@ class Repository
             $result = array_unique(array_merge($result, array_values($dependant->getRecursiveDependantsList($result))));
         }
 
-        return $result;
+        return array_unique($result);
     }
 }
