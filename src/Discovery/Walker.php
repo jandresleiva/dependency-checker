@@ -28,7 +28,6 @@ class Walker
         }
 
         $this->baseDirectory = $baseDirectory;
-        $this->walk();
     }
 
     public function getDirectories(): array {
