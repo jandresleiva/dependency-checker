@@ -65,9 +65,10 @@ switch ($argv[1]) {
         }
         $updatedRepositoryName = $argv[3];
 
+        $repositoriesList = getRepositoriesList($walker);
+
         if (in_array('--rediscover', $argv)) {
             $foundRepository = null;
-            $repositoriesList = getRepositoriesList($walker);
             foreach ($repositoriesList as $repositoryName => $repository) {
                 foreach ($repository['dependencies'] as $dependencyName) {
                     if (in_array($dependencyName, array_keys($repositoriesList))) {
@@ -83,11 +84,33 @@ switch ($argv[1]) {
         }
 
         if ($foundRepository === null) {
-            echo "Repository {$updatedRepositoryName} not found in storage.";
+            echo "Repository {$updatedRepositoryName} not found.";
             exit(1);
         }
 
-        var_dump($foundRepository->getRecursiveDependants());
+        $dependants = $foundRepository->getRecursiveDependants();
+        if (in_array('--update', $argv)) {
+            foreach($dependants as $dependant) {
+                $dependantRepository = $manager->findRepository($dependant);
+                if ($dependantRepository->getDirty() === true) {
+                    echo "Repository {$dependant} is already being updated by another process.\n";
+                    continue;
+                }
+
+                // Implements a lock mechanism to avoid running update while it's running.
+
+                $dependantRepository->setDirty();
+                $manager->flush();
+
+                chdir(dirname($repositoriesList[$dependant]['composerFilePath']));
+                exec("composer update");
+
+                $dependantRepository->setDirty(false);
+                $manager->flush();
+            }
+        }
+
+        var_dump($dependants);
 
         break;
 
@@ -148,6 +171,7 @@ function getRepositoriesList(Walker $walker): array {
         // I need to instantiate my repos first, to build dependencies.
 
         $repositoryName = $parser->getRepositoryName();
+        $repositoriesList[$repositoryName]['composerFilePath'] = $composerFilePath;
         $repositoriesList[$repositoryName]['instance'] = new Repository($repositoryName);
         $repositoriesList[$repositoryName]['dependencies'] = $parser->getDependenciesFolderNames();
     }
