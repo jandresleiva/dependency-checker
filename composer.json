@@ -19,5 +19,8 @@
             "Discovery\\": "src/Discovery",
             "Service\\": "src/Service"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
     }
 }
