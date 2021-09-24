@@ -5,11 +5,10 @@ declare(strict_types=1);
 
 namespace Service;
 
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
-use Doctrine\ORM\Mapping\Entity;
 use Entities\Repository;
+use Entities\RepositoryInterface;
 
 class RepositoryManager implements RepositoryManagerInterface
 {
@@ -28,7 +27,7 @@ class RepositoryManager implements RepositoryManagerInterface
     /**
      * @inheritDoc
      */
-    public function upsertRepository(Repository $entity): void {
+    public function upsertRepository(RepositoryInterface $entity): void {
         $instance = $this->entityRepository->findOneBy(array('name' => $entity->getName())) ?? $entity;
 
         $this->entityManager->persist($instance);
