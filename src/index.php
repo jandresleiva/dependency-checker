@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 use Discovery\Parser;
+use Discovery\Updater;
 use Discovery\Walker;
 use Entities\Repository;
+use Entities\RepositoryObservable;
 use Service\RepositoryManager;
 
 const PROJECTS_PATH = 'repositories';
@@ -12,6 +14,7 @@ const PROJECTS_PATH = 'repositories';
 require_once __DIR__ . "/../bootstrap.php";
 
 $manager = new RepositoryManager($entityManager);
+$updater = new Updater($manager);
 
 switch ($argv[1]) {
     case 'discover':
@@ -30,7 +33,6 @@ switch ($argv[1]) {
             if ($mustPersist) {
                 $manager->upsertRepository($repository['instance']);
             }
-
             foreach ($repository['dependencies'] as $dependencyName) {
                 if (in_array($dependencyName, array_keys($repositoriesList))) {
                     $repository['instance']->addDependency($repositoriesList[$dependencyName]['instance']);
@@ -56,13 +58,13 @@ switch ($argv[1]) {
 
 
         if (empty($argv[2])) {
-            echo "Commit ID must be provided along with --commit";
+            echo "Commit ID was expected as first argument along with commit";
             exit(1);
         }
         $commitId = $argv[2];
 
         if (empty($argv[3])) {
-            echo "Commit ID must be provided along with --commit";
+            echo "Repository name was expected as second argument along with commit";
             exit(1);
         }
         $updatedRepositoryName = $argv[3];
@@ -83,6 +85,7 @@ switch ($argv[1]) {
             }
         } else {
             $foundRepository = $manager->findRepository($updatedRepositoryName);
+            $foundRepository = new RepositoryObservable($foundRepository);
         }
 
         if ($foundRepository === null) {
@@ -93,22 +96,8 @@ switch ($argv[1]) {
         $dependants = $foundRepository->getRecursiveDependants();
         if (in_array('--update', $argv)) {
             foreach($dependants as $dependant) {
-                $dependantRepository = $manager->findRepository($dependant);
-                if ($dependantRepository->getDirty() === true) {
-                    echo "Repository {$dependant} is already being updated by another process.\n";
-                    continue;
-                }
-
-                // Implements a lock mechanism to avoid running update while it's running.
-
-                $dependantRepository->setDirty();
-                $manager->flush();
-
-                chdir(dirname($repositoriesList[$dependant]['composerFilePath']));
-                exec("composer update");
-
-                $dependantRepository->setDirty(false);
-                $manager->flush();
+                $dependantRepository = new RepositoryObservable($manager->findRepository($dependant));
+                $dependantRepository->updateComposer($updater);
             }
         }
 
@@ -174,8 +163,7 @@ function getRepositoriesList(Walker $walker): array {
         // I need to instantiate my repos first, to build dependencies.
 
         $repositoryName = $parser->getRepositoryName();
-        $repositoriesList[$repositoryName]['composerFilePath'] = $composerFilePath;
-        $repositoriesList[$repositoryName]['instance'] = new Repository($repositoryName);
+        $repositoriesList[$repositoryName]['instance'] = new RepositoryObservable(new Repository($repositoryName, $composerFilePath));
         $repositoriesList[$repositoryName]['dependencies'] = $parser->getDependenciesFolderNames();
     }
 
