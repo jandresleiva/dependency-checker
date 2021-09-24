@@ -63,13 +63,13 @@ class RepositoryObservable implements RepositoryInterface, SplObserver, SplSubje
             var_dump($this->repository->getFilePath());
             $updater->updateComposer($this);
         }
-        $this->notify();
+        $this->notify($updater);
     }
-    public function notify()
+    public function notify(?UpdaterInterface $updater = null)
     {
         foreach ($this->dependantObservers as $observer) {
             echo "notify {$observer->getName()} observer\n";
-            $observer->update($this);
+            $observer->updateComposer($updater);
         }
     }
 
