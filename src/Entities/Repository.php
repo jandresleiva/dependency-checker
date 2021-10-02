@@ -4,51 +4,59 @@ declare(strict_types=1);
 
 namespace Entities;
 
+use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="repository")
  */
-class Repository
+class Repository implements RepositoryInterface
 {
     /** @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      * @var int
      */
-    private int $id;
+    protected int $id;
 
     /** @ORM\Column(type="string")
      * @var string
      */
-    private string $name;
+    protected string $name;
 
     /** @ORM\Column(type="boolean", options={"default":"0"})
      * @var bool
      */
-    private bool $isDirty = false;
+    protected bool $isDirty = false;
+
+    /** @ORM\Column(type="string")
+     * @var string
+     * Absolute path to the repositories' composer file
+     */
+    protected string $filePath;
 
     /** @ORM\ManyToMany(targetEntity="Repository", inversedBy="repositoryDependencies")
      * @ORM\JoinTable(name="repository_dependency")
      */
-    private Collection $dependencies;
+    protected Collection $dependencies;
 
     /** INVERSE RELATIONSHIP
      *
      * @ORM\ManyToMany(targetEntity="Repository", mappedBy="dependencies")
      */
-    private Collection $dependants;
+    protected Collection $dependants;
 
     /**
      * @var int
      */
-    private int $dependantsCount = 0;
+    protected int $dependantsCount = 0;
 
-    public function __construct(string $name) {
+
+    public function __construct(string $name, string $filePath) {
         $this->name = $name;
+        $this->filePath = $filePath;
 
         $this->dependencies = new ArrayCollection();
         $this->dependants = new ArrayCollection();
@@ -87,6 +95,22 @@ class Repository
     }
 
     /**
+     * @return string
+     */
+    public function getFilePath(): string
+    {
+        return $this->filePath;
+    }
+
+    /**
+     * @param string $filePath
+     */
+    public function setFilePath(string $filePath): void
+    {
+        $this->filePath = $filePath;
+    }
+
+    /**
      * @return bool
      */
     public function getDirty(): bool
@@ -107,7 +131,7 @@ class Repository
      *
      * @param Repository $repository
      */
-    public function addDependant(Repository $repository) {
+    public function addDependant(RepositoryInterface $repository): void {
         $this->dependants[] = $repository;
         $this->dependantsCount++;
     }
@@ -117,7 +141,7 @@ class Repository
      *
      * @param Repository $repository
      */
-    public function addDependency(Repository $repository) {
+    public function addDependency(RepositoryInterface $repository): void {
         $this->dependencies->add($repository);
         $repository->addDependant($this);
     }
@@ -152,9 +176,7 @@ class Repository
      * @return string[]
      */
     public function getDependants(): array {
-        return array_map(function(Repository $dependant) {
-            return $dependant->getName();
-        }, $this->dependants->toArray());
+        return $this->dependants->toArray();
     }
 
     public function getDependantsCount(): int {
